@@ -1,0 +1,53 @@
+import type { Equipment } from './generated/Api'
+
+export const mockEquipment: Equipment[] = [
+  {
+    id: 1,
+    name: 'Цилиндрическая печь',
+    description: 'Современная цилиндрическая печь-камин для эффективного обогрева загородного дома.',
+    power: 12.5,
+    cost: 99900,
+    is_creator: 0,
+    liked: 0,
+    image_url: '/media/images/cylindrical-stove.png',
+    video_url: '/media/videos/cylindrical-stove.mp4',
+    likes_count: 3,
+  },
+  {
+    id: 2,
+    name: 'Бойлер косвенного нагрева',
+    description: 'Высокопроизводительный бойлер для стабильной подачи горячей воды и экономичной работы.',
+    power: 24,
+    cost: 65000,
+    is_creator: 0,
+    liked: 0,
+    image_url: '/media/images/indirect-boiler.png',
+    video_url: '/media/videos/indirect-boiler.mp4',
+    likes_count: 2,
+  },
+  {
+    id: 3,
+    name: 'Электрическая печь',
+    description: 'Электрокамин с эффектом живого пламени и быстрым безопасным обогревом жилой комнаты.',
+    power: 3,
+    cost: 35000,
+    is_creator: 0,
+    liked: 0,
+    image_url: '/media/images/electric-stove.png',
+    video_url: '/media/videos/electric-stove.mp4',
+    likes_count: 1,
+  },
+  {
+    id: 4,
+    name: 'Теплогенератор',
+    description: 'Промышленный теплогенератор высокой мощности для обогрева больших помещений и производственных зон.',
+    power: 200,
+    cost: 200000,
+    is_creator: 0,
+    liked: 0,
+    image_url: '/media/images/heat-generator.png',
+    video_url: '/media/videos/heat-generator.mp4',
+    likes_count: 0,
+  },
+]
+

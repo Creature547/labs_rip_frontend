@@ -7,14 +7,18 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api:generate": "node scripts/generate-api.mjs"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.14.0",
+    "axios": "^1.21.0",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.2",
     "react": "^19.3.1",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-redux": "^9.3.1"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
@@ -22,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.88.0",
+    "swagger-typescript-api": "^13.13.0",
     "typescript": "~6.0.3",
     "vite": "^8.3.4"
   }
