@@ -7,7 +7,7 @@ import defaultVideo from '../assets/default-video.svg'
 const price = (cost: number) =>
   new Intl.NumberFormat('ru-RU').format(cost) + ' ₽'
 
-function TileImage({ service }: { service: Equipment }) {
+export function TileImage({ service }: { service: Equipment }) {
   const [failed, setFailed] = useState(false)
 
   return (
@@ -53,16 +53,18 @@ function FeedMedia({ service }: { service: Equipment }) {
 export function TileCard({
   service,
   onDelete,
+  onDetails,
 }: {
   service: Equipment
+  onDetails: () => void
   onDelete?: () => void
 }) {
   return (
-    <Card className="tile-card h-100 position-relative">
+    <Card className="tile-card position-relative">
       <TileImage service={service} />
 
       <Card.Body className="tile-overlay d-flex flex-column">
-        <Card.Title>{service.name}</Card.Title>
+        <Card.Title><button className="tile-open" onClick={onDetails}>{service.name}<small>Подробнее →</small></button></Card.Title>
 
         <div className="tile-details mt-auto">
           <span>{service.power} кВт</span>

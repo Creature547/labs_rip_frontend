@@ -9,8 +9,8 @@ export const mockEquipment: Equipment[] = [
     cost: 99900,
     is_creator: 0,
     liked: 0,
-    image_url: '/media/images/cylindrical-stove.png',
-    video_url: '/media/videos/cylindrical-stove.mp4',
+    image_url: import.meta.env.BASE_URL + 'media/images/cylindrical-stove.png',
+    video_url: import.meta.env.BASE_URL + 'media/videos/cylindrical-stove.mp4',
     likes_count: 3,
   },
   {
@@ -21,8 +21,8 @@ export const mockEquipment: Equipment[] = [
     cost: 65000,
     is_creator: 0,
     liked: 0,
-    image_url: '/media/images/indirect-boiler.png',
-    video_url: '/media/videos/indirect-boiler.mp4',
+    image_url: import.meta.env.BASE_URL + 'media/images/indirect-boiler.png',
+    video_url: import.meta.env.BASE_URL + 'media/videos/indirect-boiler.mp4',
     likes_count: 2,
   },
   {
@@ -33,8 +33,8 @@ export const mockEquipment: Equipment[] = [
     cost: 35000,
     is_creator: 0,
     liked: 0,
-    image_url: '/media/images/electric-stove.png',
-    video_url: '/media/videos/electric-stove.mp4',
+    image_url: import.meta.env.BASE_URL + 'media/images/electric-stove.png',
+    video_url: import.meta.env.BASE_URL + 'media/videos/electric-stove.mp4',
     likes_count: 1,
   },
   {
@@ -45,8 +45,8 @@ export const mockEquipment: Equipment[] = [
     cost: 200000,
     is_creator: 0,
     liked: 0,
-    image_url: '/media/images/heat-generator.png',
-    video_url: '/media/videos/heat-generator.mp4',
+    image_url: import.meta.env.BASE_URL + 'media/images/heat-generator.png',
+    video_url: import.meta.env.BASE_URL + 'media/videos/heat-generator.mp4',
     likes_count: 0,
   },
 ]

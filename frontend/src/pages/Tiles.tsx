@@ -1,11 +1,21 @@
-import { useEffect } from 'react'
-import { Button, Col, Container, Form, Row } from 'react-bootstrap'
-import { TileCard } from '../components/EquipmentCards'
+import { useEffect, useState } from 'react'
+import { Button, Container, Form } from 'react-bootstrap'
+import { TileCard, TileImage } from '../components/EquipmentCards'
 import { deleteHeatingEquipment, loadHeatingTiles } from '../state/equipment'
 import { applyPower, editPower, setSort } from '../state/session'
 import { useAppDispatch, useAppSelector } from '../state/store'
 
 export function Tiles() {
+  const [detailId, setDetailId] = useState<number | null>(null)
+  useEffect(() => {
+    const syncDetail = () => {
+      const match = /^#equipment-(\d+)$/.exec(window.location.hash)
+      setDetailId(match ? Number(match[1]) : null)
+    }
+    syncDetail()
+    window.addEventListener('hashchange', syncDetail)
+    return () => window.removeEventListener('hashchange', syncDetail)
+  }, [])
   const dispatch = useAppDispatch()
   const login = useAppSelector(state => state.auth.login)
   const { input, minPower, sort } = useAppSelector(state => state.equipmentFilters)
@@ -15,6 +25,17 @@ export function Tiles() {
     return () => request.abort()
   }, [dispatch, minPower, login])
   const sorted = [...tiles].sort((a, b) => sort === 'price' ? a.cost - b.cost : b.id - a.id)
+  const selected = tiles.find(item => item.id === detailId)
+  if (selected) return <Container className="equipment-detail form-page">
+    <Button variant="outline-secondary" onClick={() => {
+      if (history.state?.fromTiles) history.back()
+      else { history.replaceState(null, '', location.pathname + location.search); setDetailId(null) }
+    }}>← К плитке</Button>
+    <h1>{selected.name}</h1>
+    <TileImage key={selected.id} service={selected} />
+    <p>{selected.description}</p>
+    <b>{selected.power} кВт · {selected.cost.toLocaleString('ru-RU')} ₽</b>
+  </Container>
   return <Container className="tiles-container">
     <h1 className="visually-hidden">Плитка приборов</h1>
     <Form className="filter-form" onSubmit={event => {
@@ -32,10 +53,13 @@ export function Tiles() {
       </Form.Select>
     </Form>
     <p className="found">{!error && !pending && !tiles.length ? 'По этому фильтру приборов нет.' : `Найдено приборов: ${tiles.length}`}</p>
-    <Row className="g-2">{sorted.map(item => <Col key={item.id} xs={6}>
-      <TileCard service={item} onDelete={login && item.is_creator === 1 ? () => {
+    <div className="equipment-grid">{sorted.map(item => <div key={item.id}>
+      <TileCard service={item} onDetails={() => {
+        history.pushState({ fromTiles: true }, '', '#equipment-' + item.id)
+        setDetailId(item.id)
+      }} onDelete={login && item.is_creator === 1 ? () => {
         if (window.confirm(`Удалить «${item.name}»?`)) void dispatch(deleteHeatingEquipment(item.id))
       } : undefined} />
-    </Col>)}</Row>
+    </div>)}</div>
   </Container>
 }

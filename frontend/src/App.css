@@ -1,21 +1,14 @@
 .app-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 14px 16px;
-  background: #101010;
+  min-height: 100dvh;
+  background: #18252d;
   color: #26323d;
 }
 
 .phone-screen {
   position: relative;
-  width: min(100%, 390px);
-  height: min(850px, calc(100vh - 28px));
-  min-height: 650px;
+  width: 100%;
+  height: 100dvh;
   overflow: hidden;
-  border-radius: 38px;
-  background: #18252d;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, .45);
 }
 
 .phone-content {
@@ -213,7 +206,7 @@
 
 .tile-card {
   position: relative;
-  min-height: 166px;
+  aspect-ratio: 1;
   overflow: hidden;
   border: 0;
   border-radius: 16px;
@@ -223,7 +216,7 @@
 
 .tile-image {
   width: 100%;
-  height: 166px;
+  height: 100%;
   object-fit: cover;
   background: #e9eff1;
 }
@@ -304,21 +297,6 @@
 .nav-item.disabled {
   color: rgba(255, 255, 255, .3);
   opacity: 1;
-}
-
-@media (max-width: 576px) {
-  .app-shell {
-    display: block;
-    padding: 0;
-  }
-
-  .phone-screen {
-    width: 100%;
-    height: 100dvh;
-    min-height: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
 }
 
 .feed-like {
@@ -471,4 +449,62 @@ button.feed-like[aria-pressed=true] { border-color: #ff647d; }
   background: #fff0e7;
   color: #873b26;
   font-size: .8rem;
+}
+
+/* ЛР7. Ширина экрана определяет сетку каталога, высоту карточки и отступы. */
+.phone-content { height: calc(100% - 67px - env(safe-area-inset-bottom, 0px)); }
+.bottom-nav { padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px)); }
+.tiles-container { max-width: none; padding-inline: 0; }
+.filter-form, .found {
+  width: min(calc(100% - 24px), 28rem);
+  margin-inline: auto;
+}
+.bottom-nav .container { max-width: 32rem; }
+
+.equipment-grid {
+  --columns: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tile-open { color: inherit; font: inherit; background: none; border: 0; text-align: left; padding: 0; }
+.tile-open::after { content: ''; position: absolute; inset: 0; }
+.tile-open small { display: block; margin-top: 4px; }
+.delete-tile { z-index: 2; }
+.form-page { max-width: none; }
+.form-page > form, .form-page > .draft-preview { max-width: 660px; }
+
+.equipment-detail h1 { margin: 18px 0; }
+.equipment-detail .tile-image { display: block; width: min(100%, 600px); height: clamp(180px, 36vh, 380px); border-radius: 14px; margin-bottom: 18px; }
+@media (min-width: 640px) {
+  .equipment-grid { --columns: 3; gap: 14px; }
+  .tiles-container { padding-block: 24px; }
+  .form-page { padding: 24px 32px; }
+
+  /* Вертикальное видео по центру; справа — параметры прибора и действия. */
+  .feed-container {
+    width: min(54vw, calc((100dvh - 67px) * .56));
+    margin-inline: auto;
+  }
+  .feed-card { overflow: visible; }
+  .feed-content { padding: 18px; }
+  .feed-content p { max-width: 100%; }
+  .feed-info {
+    position: absolute;
+    left: calc(100% + 12px);
+    bottom: 65px;
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    width: 108px;
+  }
+  .next-round { left: calc(100% + 12px); right: auto; }
+
+  .equipment-form-panel { padding: 20px; }
+}
+@media (min-width: 960px) {
+  .equipment-grid { --columns: 4; gap: 18px; }
+  .equipment-add-page .equipment-form { max-width: 760px; }
+
 }

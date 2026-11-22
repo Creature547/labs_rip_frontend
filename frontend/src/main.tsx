@@ -11,3 +11,10 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}><App /></Provider>
   </StrictMode>,
 )
+
+if (import.meta.env.MODE === 'pages' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(import.meta.env.BASE_URL + 'sw.js')
+      .catch(error => console.error('Ошибка установки PWA', error))
+  })
+}

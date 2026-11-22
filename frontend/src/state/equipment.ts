@@ -9,8 +9,18 @@ const equipmentThunk = createAsyncThunk.withTypes<{
   rejectValue: string
 }>()
 
+function mockTiles(power: string) {
+  return { items: mockEquipment.filter(item => item.power >= Number(power)), mock: true }
+}
+
+function mockFeed(after?: number) {
+  const index = mockEquipment.findIndex(item => item.id === after)
+  return { item: mockEquipment[(index + 1) % mockEquipment.length], mock: true }
+}
+
 export const loadHeatingTiles = equipmentThunk('heatingEquipment/loadTiles',
   async (power: string, { getState, rejectWithValue, signal }) => {
+    if (import.meta.env.MODE === 'pages') return mockTiles(power)
     const login = getState().auth.login
     try {
       const query = power === '' ? {} : { min_power: Number(power) }
@@ -18,7 +28,7 @@ export const loadHeatingTiles = equipmentThunk('heatingEquipment/loadTiles',
       return { items: response.data.map(withMediaProxy), mock: false }
     } catch (error) {
       if (!login && unavailable(error) && !signal.aborted) {
-        return { items: mockEquipment.filter(item => item.power >= Number(power)), mock: true }
+        return mockTiles(power)
       }
       return rejectWithValue(errorMessage(error))
     }
@@ -27,6 +37,7 @@ export const loadHeatingTiles = equipmentThunk('heatingEquipment/loadTiles',
 export const loadHeatingFeed = equipmentThunk('heatingEquipment/loadFeed',
   async (after: number | undefined, { getState, rejectWithValue, signal }) => {
     const login = getState().auth.login
+    if (import.meta.env.MODE === 'pages') return mockFeed(after)
     const options = { ...requestOptions(login), signal }
     try {
       const response = after === undefined
@@ -36,8 +47,7 @@ export const loadHeatingFeed = equipmentThunk('heatingEquipment/loadFeed',
     } catch (error) {
       if (statusOf(error) === 404) return { item: null, mock: false }
       if (!login && unavailable(error) && !signal.aborted) {
-        const index = mockEquipment.findIndex(item => item.id === after)
-        return { item: mockEquipment[(index + 1) % mockEquipment.length], mock: true }
+        return mockFeed(after)
       }
       return rejectWithValue(errorMessage(error))
     }

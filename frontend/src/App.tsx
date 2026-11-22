@@ -26,6 +26,7 @@ export default function App() {
   function navigate(next: Page) {
     setAuthError('')
     dispatch(equipmentSlice.actions.clearError())
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search)
     setPage(next)
   }
 
@@ -48,7 +49,7 @@ export default function App() {
         {navigation.map(([next, icon, title]) => next === 'login' && login
           ? <LogoutButton key={next} {...authCallbacks} onSuccess={() => navigate('feed')} />
           : <Button key={next} variant="link"
-              disabled={next === 'add' && !login} className={'nav-item' + (page === next ? ' active' : '')}
+              disabled={(next === 'add' && !login) || (next === 'login' && import.meta.env.MODE === 'pages')} className={'nav-item' + (page === next ? ' active' : '')}
               onClick={() => navigate(next)}>
               <span aria-hidden="true" className="nav-icon">{icon}</span><span>{title}</span>
             </Button>)}

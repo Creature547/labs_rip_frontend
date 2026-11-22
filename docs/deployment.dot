@@ -1,0 +1,10 @@
+digraph Heating {
+ graph [rankdir=TB, bgcolor="white", fontname="DejaVu Sans", label="Развёртывание приложения «Отопительные приборы»", labelloc=t, fontsize=18, nodesep=.35, ranksep=.55]
+ node [shape=box, style="rounded,filled", fillcolor="#edf4f8", fontname="DejaVu Sans", fontsize=11]
+ edge [fontname="DejaVu Sans", fontsize=10, color="#4d6878"]
+ subgraph cluster_phone { label="Телефон"; browser [label="Браузер / установленное PWA\nReact · Redux Toolkit"]; cache [label="Service Worker · Cache Storage\nСтатика и mock-каталог"]; browser -> cache [label="Cache API"] }
+ subgraph cluster_github { label="GitHub Pages"; pages [label="HTTPS-сервер статики\nSPA, manifest, sw.js, mock-медиа"] }
+ subgraph cluster_laptop { label="Ноутбук · Windows / WSL2"; proxy [label="Node.js / Vite :5173\nСтатика SPA · TLS · реверс-прокси"]; go [label="Go / Gin :8080\nREST API · пользователи и приборы"]; pg [label="PostgreSQL :5432\nПользователи и оборудование"]; redis [label="Redis :6379"]; minio [label="MinIO :9000\nИзображения и видео"]; proxy -> go [label="HTTP /api/*"]; proxy -> minio [label="HTTP /s3/* → объекты"]; go -> pg [label="PostgreSQL / TCP"]; go -> redis [label="RESP / TCP"]; go -> minio [label="S3 API / HTTP"] }
+ browser -> pages [label="HTTPS · mock"]
+ browser -> proxy [label="HTTPS · Wi-Fi · IP ноутбука"]
+}
