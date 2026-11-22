@@ -400,3 +400,75 @@ button.feed-like[aria-pressed=true] { border-color: #ff647d; }
   color: rgba(255, 255, 255, 0.35);
   opacity: 1;
 }
+/* ЛР6: экран добавления по шагам — сначала название и выбор файлов. */
+.equipment-add-page .form-step-indicator {
+  margin: -12px 0 15px;
+  color: #647580;
+  font-size: .8rem;
+  font-weight: 650;
+}
+.equipment-add-page .equipment-form { gap: 14px; }
+.equipment-form-panel {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #d2dee5;
+  border-radius: 15px;
+  background: #fff;
+}
+.equipment-add-page .equipment-form-panel h2 {
+  margin: 0;
+  color: #26323d;
+  font-size: .96rem;
+  font-weight: 800;
+}
+.equipment-add-page .equipment-form-panel .form-label {
+  display: block;
+  margin-bottom: 6px;
+}
+.equipment-add-page .file-select-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #4d87a6;
+  border-radius: 10px;
+  background: #eef6fa;
+  color: #20516c;
+  font-size: .82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.equipment-add-page .file-select-button:hover,
+.equipment-add-page .file-select-button:focus-within {
+  background: #d9ebf5;
+  color: #153e55;
+}
+.equipment-add-page .chosen-file {
+  display: block;
+  overflow: hidden;
+  margin-top: 7px;
+  color: #607580;
+  font-size: .74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.equipment-add-page .file-preview { display: block; margin-top: 10px; }
+.equipment-add-page .form-next-button { width: 100%; padding: 10px; }
+.equipment-add-page .form-step-actions { display: flex; gap: 10px; }
+.equipment-add-page .form-step-actions .btn { flex: 1; }
+.equipment-add-page .equipment-form-note {
+  margin: 0;
+  color: #607580;
+  font-size: .75rem;
+  line-height: 1.45;
+}
+.equipment-add-page .form-validation {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #fff0e7;
+  color: #873b26;
+  font-size: .8rem;
+}
