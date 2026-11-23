@@ -263,14 +263,31 @@ export class Api<
         name?: string;
         min_power?: number;
         max_cost?: number;
+        page?: number;
+        limit?: number;
+        sort?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<Equipment[], void>({
+      this.request<{ data: Equipment[]; page: number; limit: number; total: number }, void>({
         path: `/heating-equipment`,
         method: "GET",
         query: query,
         format: "json",
+        ...params,
+      }),
+
+    /** @request GET:/heating-equipment/session-feed */
+    heatingEquipmentSessionFeed: (
+      query: { session: string; position: number },
+      params: RequestParams = {},
+    ) =>
+      this.request<{ item: Equipment; position: number }, void>({
+        path: `/heating-equipment/session-feed`,
+        method: "GET",
+        query,
+        format: "json",
+        timeout: 10000,
         ...params,
       }),
 

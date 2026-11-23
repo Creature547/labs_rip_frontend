@@ -2,53 +2,68 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import { equipmentApi, errorMessage, requestOptions, statusOf, unavailable, withMediaProxy } from '../api/client'
 import type { Equipment } from '../api/generated/Api'
 import { mockEquipment } from '../api/mockEquipment'
-import { signedIn, signedOut } from './session'
+import { signedIn, signedOut, type EquipmentSort } from './session'
 
 const equipmentThunk = createAsyncThunk.withTypes<{
   state: { auth: { login: string | null } }
   rejectValue: string
 }>()
 
-function mockTiles(power: string) {
-  return { items: mockEquipment.filter(item => item.power >= Number(power)), mock: true }
+export const equipmentPageSize = 12
+type TilesQuery = { power: string; page: number; sort: EquipmentSort }
+type FeedQuery = { position: number; after?: number }
+
+function mockTiles({ power, page, sort }: TilesQuery) {
+  const items = mockEquipment.filter(item => item.power >= Number(power))
+    .sort((a, b) => {
+      if (sort === 'power') return a.power - b.power || a.id - b.id
+      return (sort === 'price' ? a.cost - b.cost : 0) || b.id - a.id
+    })
+  return { items: items.slice((page - 1) * equipmentPageSize, page * equipmentPageSize), total: items.length, mock: true }
 }
 
-function mockFeed(after?: number) {
+function mockFeed({ position, after }: FeedQuery) {
   const index = mockEquipment.findIndex(item => item.id === after)
-  return { item: mockEquipment[(index + 1) % mockEquipment.length], mock: true }
+  return { item: mockEquipment[(index + 1) % mockEquipment.length], position, mock: true }
+}
+
+function feedSession() {
+  const stored = sessionStorage.getItem('heating_feed_session')
+  if (stored) return stored
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('')
+  sessionStorage.setItem('heating_feed_session', id)
+  return id
 }
 
 export const loadHeatingTiles = equipmentThunk('heatingEquipment/loadTiles',
-  async (power: string, { getState, rejectWithValue, signal }) => {
-    if (import.meta.env.MODE === 'pages') return mockTiles(power)
+  async (query: TilesQuery, { getState, rejectWithValue, signal }) => {
+    if (import.meta.env.MODE === 'pages') return mockTiles(query)
     const login = getState().auth.login
     try {
-      const query = power === '' ? {} : { min_power: Number(power) }
-      const response = await equipmentApi.heatingEquipmentList(query, { ...requestOptions(login), signal })
-      return { items: response.data.map(withMediaProxy), mock: false }
+      const response = await equipmentApi.heatingEquipmentList({
+        min_power: query.power === '' ? undefined : Number(query.power),
+        page: query.page, limit: equipmentPageSize, sort: query.sort,
+      }, { ...requestOptions(login), signal })
+      return { items: response.data.data.map(withMediaProxy), total: response.data.total, mock: false }
     } catch (error) {
-      if (!login && unavailable(error) && !signal.aborted) {
-        return mockTiles(power)
-      }
+      if (!login && unavailable(error) && !signal.aborted) return mockTiles(query)
       return rejectWithValue(errorMessage(error))
     }
   })
 
 export const loadHeatingFeed = equipmentThunk('heatingEquipment/loadFeed',
-  async (after: number | undefined, { getState, rejectWithValue, signal }) => {
+  async (query: FeedQuery, { getState, rejectWithValue, signal }) => {
     const login = getState().auth.login
-    if (import.meta.env.MODE === 'pages') return mockFeed(after)
-    const options = { ...requestOptions(login), signal }
+    if (import.meta.env.MODE === 'pages') return mockFeed(query)
     try {
-      const response = after === undefined
-        ? await equipmentApi.heatingEquipmentFeed(options)
-        : await equipmentApi.heatingEquipmentFeedById(after, { next: true }, options)
-      return { item: withMediaProxy(response.data), mock: false }
+      const { data } = await equipmentApi.heatingEquipmentSessionFeed(
+        { session: feedSession(), position: query.position },
+        { ...requestOptions(login), signal },
+      )
+      return { item: withMediaProxy(data.item), position: data.position, mock: false }
     } catch (error) {
-      if (statusOf(error) === 404) return { item: null, mock: false }
-      if (!login && unavailable(error) && !signal.aborted) {
-        return mockFeed(after)
-      }
+      if (statusOf(error) === 404) return { item: null, position: query.position, mock: false }
+      if (!login && unavailable(error) && !signal.aborted) return mockFeed(query)
       return rejectWithValue(errorMessage(error))
     }
   })
@@ -96,7 +111,7 @@ export const deleteHeatingEquipment = equipmentThunk('heatingEquipment/delete',
 
 const initialState = {
   tiles: [] as Equipment[], feed: null as Equipment | null, draft: null as Equipment | null,
-  draftChecked: false, mock: false, pending: 0, error: '',
+  total: 0, feedPosition: 1, draftChecked: false, mock: false, pending: 0, error: '',
 }
 const requests = [loadHeatingTiles, loadHeatingFeed, loadHeatingDraft, createHeatingDraft,
   publishHeatingEquipment, likeHeatingEquipment, deleteHeatingEquipment] as const
@@ -110,10 +125,12 @@ export const equipmentSlice = createSlice({
       .addCase(signedOut, () => initialState)
       .addCase(loadHeatingTiles.fulfilled, (state, { payload }) => {
         state.tiles = payload.items
+        state.total = payload.total
         state.mock = payload.mock
       })
       .addCase(loadHeatingFeed.fulfilled, (state, { payload }) => {
         state.feed = payload.item
+        state.feedPosition = payload.position
         state.mock = payload.mock
       })
       .addCase(loadHeatingDraft.pending, state => { state.draftChecked = false })

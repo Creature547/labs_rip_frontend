@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Container, Navbar, Spinner } from 'react-bootstrap'
 import { useAppDispatch, useAppSelector } from './state/store'
-import { equipmentSlice } from './state/equipment'
+import { equipmentSlice, loadHeatingFeed } from './state/equipment'
 import { AddEquipment } from './pages/AddEquipment'
 import { Feed } from './pages/Feed'
 import { Login, LogoutButton } from './pages/Login'
@@ -21,6 +21,10 @@ export default function App() {
   const dispatch = useAppDispatch()
   const login = useAppSelector(state => state.auth.login)
   const { pending, error, mock } = useAppSelector(state => state.heatingEquipment)
+  useEffect(() => {
+    const request = dispatch(loadHeatingFeed({ position: 1 }))
+    return () => request.abort()
+  }, [dispatch, login])
   const busy = authBusy || pending > 0
 
   function navigate(next: Page) {
